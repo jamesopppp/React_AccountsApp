@@ -1,44 +1,59 @@
 import React, { Component } from 'react';
 import Record from './Record';
+// import { getJSON } from 'jquery';
+import axios from 'axios';
 
 class Records extends Component {
   constructor(){
     super();
     this.state = {
-      records: [
-        {
-          "id":1,
-          "date":"2018-01-09",
-          "title":"收入",
-          "amount":20
-        },
-        {
-          "id":2,
-          "date":"2018-01-03",
-          "title":"App开发",
-          "amount":200
-        }
-      ]
+      error: null,
+      isLoaded: false,
+      records: []
     }
   }
+
+  componentDidMount(){
+    axios.get("https://5b718700586eb5001463a738.mockapi.io/api/v1/records").then(
+      response => this.setState({
+        records: response.data,
+        isLoaded: true
+      })
+    ).catch(
+      error => this.setState({
+        error,
+        isLoaded: true
+      })
+    )
+  }
+
+
   render() {
-    return (
-      <div className="App">
-        <h2>Records</h2>
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <td>Date</td>
-              <td>Title</td>
-              <td>Amount</td>
-            </tr>
-          </thead>
-          <tbody>
-            {this.state.records.map((record,i)=><Record record={record}/>)}
-          </tbody>
-        </table>
-      </div>
-    );
+    const { error, isLoaded, records } = this.state;
+
+    if (error){
+      return <div>Error: {error.message}</div>;
+    } else if (!isLoaded){
+      return <div>Loading...</div>;
+    } else {
+      return (
+        <div className="App">
+          <h2>Records</h2>
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <td>Date</td>
+                <td>Title</td>
+                <td>Amount</td>
+              </tr>
+            </thead>
+            <tbody>
+              {records.map((record)=><Record key={record.id} {...record}/>)}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
   }
 }
 
