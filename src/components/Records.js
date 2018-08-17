@@ -56,6 +56,15 @@ class Records extends Component {
     })
   }
 
+  deleteRecord(event){
+    event.preventDefault();
+    RecordsAPI.remove(this.props.record.id).then(
+      response => console.log(response.data)
+    ).catch(
+      error => console.log(error.message)
+    )
+  }
+
   render() {
     const { error, isLoaded, records } = this.state;
     let recordsComponent;
@@ -76,7 +85,14 @@ class Records extends Component {
               </tr>
             </thead>
             <tbody>
-              {records.map((record)=><Record key={record.id} record={record} handleEditRecord={this.updateRecord.bind(this)}/>)}
+              {records.map((record)=>{
+                <Record 
+                  key={record.id}
+                  record={record} 
+                  handleEditRecord={this.updateRecord.bind(this)}
+                  handleDeleteRecord={this.deleteRecord.bind(this)}
+                />
+              })}
             </tbody>
           </table>
       );

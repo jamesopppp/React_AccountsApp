@@ -23,7 +23,6 @@ export default class Record extends Component {
       title: this.refs.title.value,
       amount: Number.parseInt(this.refs.amount.value,0)
     }
-    console.log(record);
     RecordsAPI.update(this.props.record.id, record).then(
       response => {
         this.setState({
@@ -36,6 +35,15 @@ export default class Record extends Component {
     )
   }
 
+  handleDelete(event){
+    event.preventDefault();
+    RecordsAPI.remove(this.props.record.id).then(
+      response => console.log(response.data)
+    ).catch(
+      error => console.log(error)
+    )
+  }
+
   recordRow() {
     return (
       <tr>
@@ -44,7 +52,7 @@ export default class Record extends Component {
         <td>{this.props.record.amount}</td>
         <td>
           <button className="btn btn-info mr-1" onClick={this.handleTaggle.bind(this)}>Edit</button>
-          <button className="btn btn-danger">Delete</button>
+          <button className="btn btn-danger" onClick={this.handleDelete.bind(this)}>Delete</button>
         </td>
       </tr>
     );
