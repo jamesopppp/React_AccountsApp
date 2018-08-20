@@ -3,6 +3,7 @@ import Record from './Record';
 // import { getJSON } from 'jquery';
 import * as RecordsAPI from '../utils/RecordsAPI';
 import RecordForm from './RecordForm';
+import AmountBox from './AmountBox';
 
 class Records extends Component {
   constructor(){
@@ -56,13 +57,36 @@ class Records extends Component {
     })
   }
 
-  deleteRecord(event){
-    event.preventDefault();
-    RecordsAPI.remove(this.props.record.id).then(
-      response => console.log(response.data)
-    ).catch(
-      error => console.log(error.message)
-    )
+  deleteRecord(record){
+    const recordIndex = this.state.records.indexOf(record);
+    const newRecords = this.state.records.filter((item,index) => index !== recordIndex);
+    this.setState({
+      records: newRecords
+    })
+  }
+
+  credits(){
+    let credits = this.state.records.filter((record) => {
+      return record.amount >= 0;
+    })
+
+    return credits.reduce((prev, curr) => {
+      return prev + Number.parseInt(curr.amount,0)
+    },0)
+  }
+
+  debits(){
+    let credits = this.state.records.filter((record) => {
+      return record.amount < 0;
+    })
+
+    return credits.reduce((prev, curr) => {
+      return prev + Number.parseInt(curr.amount,0)
+    },0)
+  }
+
+  balance(){
+    return this.credits() + this.debits();
   }
 
   render() {
@@ -86,7 +110,7 @@ class Records extends Component {
             </thead>
             <tbody>
               {records.map((record)=>{
-                <Record 
+                return <Record 
                   key={record.id}
                   record={record} 
                   handleEditRecord={this.updateRecord.bind(this)}
@@ -100,6 +124,11 @@ class Records extends Component {
     return(
       <div>
         <h2>Records</h2>
+        <div className="row mb-3">
+          <AmountBox text="Credit" type="success" amount={this.credits()}/>
+          <AmountBox text="Debit" type="danger" amount={this.debits()}/>
+          <AmountBox text="Balance" type="info" amount={this.balance()}/>
+        </div>
         <RecordForm handleNewRecord={this.addRecord.bind(this)}/>
         {recordsComponent}
       </div>

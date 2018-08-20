@@ -38,9 +38,9 @@ export default class Record extends Component {
   handleDelete(event){
     event.preventDefault();
     RecordsAPI.remove(this.props.record.id).then(
-      response => console.log(response.data)
+      response => this.props.handleDeleteRecord(this.props.record)
     ).catch(
-      error => console.log(error)
+      error => console.log(error.message)
     )
   }
 
